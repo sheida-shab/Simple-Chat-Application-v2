@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Chat Application</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header id="appHeader">
+      <h1>Welcome to Simple Chat App</h1>
+    </header>
+
+    <!-- 1. Main container for messages -->
+    <div id="messageContainer">
+      <!-- Messages will be added here dynamically -->
+    </div>
+
+    <!-- Form to send a new message -->
+    <form id="sendMessageForm">
+      <h2>Send a message :</h2>
+      <!-- Input for user name -->
+      <input type="text" id="user" placeholder="Your name" class="inputField" />
+      <!-- Input for message text -->
+      <input
+        type="text"
+        id="text"
+        placeholder="Your message"
+        class="inputField"
+      />
+      <!-- Button to send the message -->
+      <button type="submit" class="submitBtn">Send</button>
+
+      <div id="errorMessage"></div>
+    </form>
+  </body>
+  <script src="polling.js"></script>
+</html>
