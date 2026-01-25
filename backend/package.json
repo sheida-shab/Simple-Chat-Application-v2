@@ -11,8 +11,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "escape-html": "^1.0.3",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "websocket": "^1.0.35"
   }
 }
