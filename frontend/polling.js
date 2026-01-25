@@ -1,9 +1,16 @@
-console.log("script.js is connected");
+import { messages, setMessages } from "./state.js";
+import { USE_WEBSOCKET, SERVER_URL } from "./config.js";
+import { sendWebSocketMessage } from "./websocket.js";
 
-let messages = []; // store all seen messages
+
+
+fetchInitialMessages();
 
 // Start fetching new messages repeatedly
-fetchNewMessages();
+if (!USE_WEBSOCKET) {
+  console.log("script.js is connected");
+  fetchNewMessages();
+}
 //////////////////////////////////////////////////
 // DOM references
 //////////////////////////////////////////////////
@@ -37,14 +44,11 @@ messageForm.addEventListener("submit", async (e) => {
     const data = { user: userName, text: message };
 
     // POST the new message to the server
-    const response = await fetch(
-      "https://sheida-shab-chatapp-backend.hosting.codeyourfuture.io/messages",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }
-    );
+    const response = await fetch(`${SERVER_URL}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
     // Check if the server responded with an error
     if (!response.ok) {
@@ -52,33 +56,35 @@ messageForm.addEventListener("submit", async (e) => {
     }
 
     // If everything is ok, get the response text
-    const result = await response.text();
-    console.log(result);
+    
+    const result = await response.json();
+    console.log("Received from server:", result);
+    
+    if (result.timestamp) {
+     // Show success message to the user
+     errorMessageContainer.textContent = "message sent successfully!";
+     errorMessageContainer.style.color = "green";
+     setTimeout(() => {
+       errorMessageContainer.textContent = "";
+     }, 3000);
 
-    if (result === "received") {
-      // Show success message to the user
-      errorMessageContainer.textContent = "message sent successfully!";
-      errorMessageContainer.style.color = "green";
-      setTimeout(() => {
-        errorMessageContainer.textContent = "";
-      }, 3000);
+     // Add the new message to local state with timestamp and initial likes/dislikes
+    if (!USE_WEBSOCKET) {
+     messages.push({
+       user: userName,
+       text: message,
+       timestamp: result.timestamp,
+       likes: result.likes,
+       dislikes: result.dislikes,
+     });
 
-      // Add the new message to local state with timestamp and initial likes/dislikes
-      messages.push({
-        user: userName,
-        text: message,
-        timestamp: Date.now(),
-        likes: 0,
-        dislikes: 0,
-      });
-
-      // Re-render all messages to include the new one
-      renderMessages();
-
-      // Clear input fields after sending
-      userInput.value = "";
-      messageInput.value = "";
+     // Re-render all messages to include the new one
+     renderMessages();
     }
+     // Clear input fields after sending
+     userInput.value = "";
+     messageInput.value = "";
+   }
   }
 });
 
@@ -86,7 +92,7 @@ messageForm.addEventListener("submit", async (e) => {
 // Render messages to the DOM
 //////////////////////////////////////////////////
 
-async function renderMessages() {
+export async function renderMessages() {
   messageContainer.innerHTML = ""; // clear container
 
   // Loop through each message and create its DOM elements
@@ -129,28 +135,32 @@ async function renderMessages() {
     //////////////////////////////////////////////////
     likeBtn.addEventListener("click", async (e) => {
       const thisMessageTimestamp = likeBtn.dataset.timestamp;
-      const url = `https://sheida-shab-chatapp-backend.hosting.codeyourfuture.io/messages/${thisMessageTimestamp}/like`;
-      try {
-        const response = await fetch(url, { method: "post" });
-        const data = await response.json();
+      if (USE_WEBSOCKET) {
+        sendWebSocketMessage("like", thisMessageTimestamp);
+      } else {
+        const url = `${SERVER_URL}/messages/${thisMessageTimestamp}/like`;
+        try {
+          const response = await fetch(url, { method: "post" });
+          const data = await response.json();
 
-        // Update button text immediately
-        likeBtn.textContent = "👍" + data.likes;
+          // Update button text immediately
+          likeBtn.textContent = "👍" + data.likes;
 
-        // Update the local messages array so front-end stays consistent
-        const currentMessage = messages.find(
-          (msg) => msg.timestamp === Number(thisMessageTimestamp)
-        );
-        if (currentMessage) {
-          currentMessage.likes = data.likes;
-        } else {
-          console.warn(
-            "Message not found in local array:",
-            thisMessageTimestamp
+          // Update the local messages array so front-end stays consistent
+          const currentMessage = messages.find(
+            (msg) => msg.timestamp === Number(thisMessageTimestamp),
           );
+          if (currentMessage) {
+            currentMessage.likes = data.likes;
+          } else {
+            console.warn(
+              "Message not found in local array:",
+              thisMessageTimestamp,
+            );
+          }
+        } catch (error) {
+          console.error("Error liking message:", error);
         }
-      } catch (error) {
-        console.error("Error liking message:", error);
       }
     });
 
@@ -159,28 +169,32 @@ async function renderMessages() {
     //////////////////////////////////////////////////
     dislikeBtn.addEventListener("click", async (e) => {
       const thisMessageTimestamp = dislikeBtn.dataset.timestamp;
-      const url = `https://sheida-shab-chatapp-backend.hosting.codeyourfuture.io/messages/${thisMessageTimestamp}/dislike`;
-      try {
-        const response = await fetch(url, { method: "post" });
-        const data = await response.json();
+      if (USE_WEBSOCKET) {
+        sendWebSocketMessage("dislike", thisMessageTimestamp);
+      } else {
+        const url = `${SERVER_URL}/messages/${thisMessageTimestamp}/dislike`;
+        try {
+          const response = await fetch(url, { method: "post" });
+          const data = await response.json();
 
-        // Update button text immediately
-        dislikeBtn.textContent = "👎" + data.dislikes;
+          // Update button text immediately
+          dislikeBtn.textContent = "👎" + data.dislikes;
 
-        // Update the local messages array
-        const currentMessage = messages.find(
-          (msg) => msg.timestamp === Number(thisMessageTimestamp)
-        );
-        if (currentMessage) {
-          currentMessage.dislikes = data.dislikes;
-        } else {
-          console.warn(
-            "Message not found in local array:",
-            thisMessageTimestamp
+          // Update the local messages array
+          const currentMessage = messages.find(
+            (msg) => msg.timestamp === Number(thisMessageTimestamp),
           );
+          if (currentMessage) {
+            currentMessage.dislikes = data.dislikes;
+          } else {
+            console.warn(
+              "Message not found in local array:",
+              thisMessageTimestamp,
+            );
+          }
+        } catch (error) {
+          console.error("Error disliking message:", error);
         }
-      } catch (error) {
-        console.error("Error disliking message:", error);
       }
     });
 
@@ -201,7 +215,7 @@ async function fetchNewMessages() {
     messages.length > 0 ? messages[messages.length - 1].timestamp : 0;
 
   //Construct the GET URL with query parameter ?since=<timestamp>
-  const url = `https://sheida-shab-chatapp-backend.hosting.codeyourfuture.io/messages?since=${lastTimestamp}`;
+  const url = `${SERVER_URL}/messages?since=${lastTimestamp}`;
 
   //GET new messages from the server
   try {
@@ -219,4 +233,31 @@ async function fetchNewMessages() {
   }
   // Call this function again after 2 seconds
   setTimeout(fetchNewMessages, 2000);
+}
+
+export function updateMessageFromWebSocket(updatedMessage) {
+  const existingMessage = messages.find(
+    (msg) => msg.timestamp === updatedMessage.timestamp,
+  );
+
+  if (existingMessage) {
+    existingMessage.likes = updatedMessage.likes;
+    existingMessage.dislikes = updatedMessage.dislikes;
+  } else {
+    messages.push(updatedMessage);
+  }
+
+  renderMessages();
+}
+
+async function fetchInitialMessages() {
+  try {
+    const response = await fetch(`${SERVER_URL}/messages`);
+    const data = await response.json();
+
+    setMessages(data);
+    renderMessages();
+  } catch (err) {
+    console.error("Failed to load initial messages", err);
+  }
 }
