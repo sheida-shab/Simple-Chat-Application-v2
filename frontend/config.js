@@ -13,7 +13,7 @@ export const USE_WEBSOCKET = false;
  */
 //export const SERVER_URL = "http://localhost:3000";
 export const SERVER_URL =
-  "https://sheida-shab-chatapp-backend.hosting.codeyourfuture.io/";
+  "https://sheida-shab-chatapp-backend.hosting.codeyourfuture.io";
 
 /**
  * WebSocket server URL
@@ -21,4 +21,4 @@ export const SERVER_URL =
  */
 // export const WEBSOCKET_URL = "ws://localhost:3000";
 export const WEBSOCKET_URL =
-  "ws://sheida-shab-chatapp-backend.hosting.codeyourfuture.io/";
+  "ws://sheida-shab-chatapp-backend.hosting.codeyourfuture.io";
