@@ -160,6 +160,10 @@ app.get("/messages", (req, res) => {
 //////////////////////////////////////////////////
 // Start server
 //////////////////////////////////////////////////
+// Optional: simple GET / route to avoid 404
+app.get("/", (req, res) => {
+  res.send("Chat backend is running! Use /messages for API.");
+});
 
 server.listen(port, () => {
   console.log(`Chat server running on port ${port}`);
