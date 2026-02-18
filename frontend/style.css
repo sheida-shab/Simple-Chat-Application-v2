@@ -1,0 +1,94 @@
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#appHeader {
+    background-color: #4CAF50;   /* green background */
+    color: white;                /* white text */
+    padding: 15px;               /* spacing around text */
+    text-align: center;          /* center text */
+    font-size: 24px;             /* larger font for title */
+   
+}
+
+
+.inputField {
+    border: 1px solid #ccc;     /* gray border around the input */
+    padding: 12px;              /* internal padding for comfortable typing */
+    margin-bottom: 10px;        /* spacing between inputs */
+    border-radius: 4px;         /* rounded corners */
+    width: 100%;                /* full width of the form */
+    box-sizing: border-box;     /* include padding in width calculation */
+    font-size: 16px;            /* larger text size */
+}
+
+#sendMessageForm {
+    border: 1px solid #aaa;     /* gray border around the form */
+    padding: 15px;              /* internal padding inside form */
+    border-radius: 6px;         /* rounded corners for form */
+    max-width: 400px;           /* maximum width of the form */
+    margin: 20px auto;          /* center horizontally with top/bottom margin */
+    background-color: #f9f9f9;  /* light background color */
+}
+
+.message {
+    border: 1px solid #bbb;     /* gray border around each message */
+    padding: 10px;              /* internal padding for message text */
+    margin-bottom: 8px;         /* spacing between messages */
+    border-radius: 5px;         /* rounded corners */
+    background-color: #f1f1f1;  /* light background color */
+    max-width: 80%;             /* limit message width */
+}
+
+/* Message text */
+.text {
+  line-height: 1.4;
+}
+
+.submitBtn {
+    padding: 10px 20px;      /* vertical and horizontal padding */
+    font-size: 16px;         /* larger text size */
+    border-radius: 5px;      /* rounded corners */
+    display: block;           /* make button take full width of content block */
+    margin: 10px auto 0 auto; /* top, horizontal center, bottom */
+}
+
+#messageContainer {
+    flex: 1;                  /* takes remaining space */
+    overflow-y: auto;         /* scroll only messages */
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    background-color: #fafafa;
+}
+/* Username: bold and highlighted */
+.user {
+  font-weight: bold;
+  color: #2c7be5;      /* Distinct color for username */
+  margin-bottom: 4px;  /* Space between username and message text */
+}
+
+/* Container for like / dislike buttons */
+.feedback {
+  margin-top: 6px;        /* Space above feedback buttons */
+  display: flex;
+  gap: 8px;               /* Space between buttons */
+}
+
+/* Like / Dislike buttons */
+.feedbackButtons {
+  font-size: 0.85rem;     /* Smaller buttons */
+  padding: 2px 6px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* Hover effect for feedback buttons */
+.feedbackButtons:hover {
+  transform: scale(1.1);
+}
