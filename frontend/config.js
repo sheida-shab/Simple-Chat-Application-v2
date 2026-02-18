@@ -9,6 +9,14 @@
 export const USE_WEBSOCKET = false;
 
 /**
+ * Determines whether to use long-polling or short-polling when WebSocket is disabled
+ * - true: use long-polling (server holds requests until new message)
+ * - false: use classic short-polling (every 2 seconds)
+ */
+export const USE_LONG_POLLING = true;
+
+
+/**
  * URL of the backend server for HTTP requests (POST/GET)
  */
 //export const SERVER_URL = "http://localhost:3000";

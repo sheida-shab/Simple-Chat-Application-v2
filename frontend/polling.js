@@ -1,5 +1,5 @@
 import { messages, setMessages } from "./state.js";
-import { USE_WEBSOCKET, SERVER_URL } from "./config.js";
+import { USE_WEBSOCKET, SERVER_URL, USE_LONG_POLLING } from "./config.js";
 import { sendWebSocketMessage } from "./websocket.js";
 
 //////////////////////////////////////////////////
@@ -160,7 +160,9 @@ async function fetchNewMessages() {
     console.error("Error fetching new messages:", err);
   }
 
-  setTimeout(fetchNewMessages, 2000);
+  if (!USE_LONG_POLLING) {
+     setTimeout(fetchNewMessages, 2000);
+  }
 }
 
 //////////////////////////////////////////////////
