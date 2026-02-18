@@ -18,6 +18,10 @@ const webSocketServer = new WebSocketServer({ httpServer: server });
 // In-memory message store
 const userMessageArr = [];
 
+// Long-polling: store pending GET /messages responses
+const pendingLongPollResponses = [];
+
+
 //////////////////////////////////////////////////
 // WebSocket handling (likes / dislikes updates)
 //////////////////////////////////////////////////
@@ -94,6 +98,12 @@ app.post("/messages", (req, res) => {
     }
   });
 
+  // Respond to all pending long-poll GET requests
+  while (pendingLongPollResponses.length > 0) {
+    const pendingRes = pendingLongPollResponses.pop();
+    pendingRes.json([newMessage]);
+  }
+
   res.json(newMessage);
 });
 
@@ -153,6 +163,13 @@ app.get("/messages", (req, res) => {
     since !== undefined
       ? userMessageArr.filter((m) => m.timestamp > since)
       : userMessageArr;
+
+  // 👉 Long-polling behaviour
+  if (result.length === 0) {
+    // No new messages → keep request open
+    pendingLongPollResponses.push(res);
+    return;
+  }    
 
   res.json(result);
 });
