@@ -5,7 +5,7 @@ import { sendWebSocketMessage } from "./websocket.js";
 //////////////////////////////////////////////////
 // Initial load
 //////////////////////////////////////////////////
-
+console.log("🟡 polling.js loaded | USE_WEBSOCKET =", USE_WEBSOCKET);
 fetchInitialMessages();
 
 if (!USE_WEBSOCKET) {
@@ -29,7 +29,7 @@ messageContainer.classList.add("general");
 //////////////////////////////////////////////////
 
 messageForm.addEventListener("submit", async (e) => {
- 
+  console.log("🟢 SUBMIT handler started");
   e.preventDefault();
 
   const userName = userInput.value.trim();
@@ -43,7 +43,7 @@ messageForm.addEventListener("submit", async (e) => {
   }
 
   errorMessageContainer.textContent = "";
-
+  console.log("🟡 about to POST /messages");
   const response = await fetch(`${SERVER_URL}/messages`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -19,7 +19,7 @@ if (USE_WEBSOCKET) {
 
   // Incoming message from server
   ws.addEventListener("message", (event) => {
-    console.log("🔔 Raw WS event:", event);
+    console.log("🔵 WS message received", msg.timestamp); 
 
     try {
       const msg = JSON.parse(event.data);
