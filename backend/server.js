@@ -65,6 +65,7 @@ webSocketServer.on("request", (request) => {
 
 // Create a new message
 app.post("/messages", (req, res) => {
+ 
   let { user, text, likes, dislikes } = req.body;
 
   // Validate input
@@ -87,7 +88,10 @@ app.post("/messages", (req, res) => {
     dislikes,
   };
 
-  userMessageArr.push(newMessage);
+  // Only add the message if it's not a duplicate
+  if (!userMessageArr.find((m) => m.timestamp === newMessage.timestamp)) {
+    userMessageArr.push(newMessage);
+  }
 
   // Notify WebSocket clients about new message
   webSocketServer.connections.forEach((conn) => {
@@ -103,6 +107,7 @@ app.post("/messages", (req, res) => {
     const pendingRes = pendingLongPollResponses.pop();
     pendingRes.json([newMessage]);
   }
+
 
   res.json(newMessage);
 });

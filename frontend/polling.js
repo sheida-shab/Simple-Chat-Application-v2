@@ -29,6 +29,7 @@ messageContainer.classList.add("general");
 //////////////////////////////////////////////////
 
 messageForm.addEventListener("submit", async (e) => {
+ 
   e.preventDefault();
 
   const userName = userInput.value.trim();
@@ -48,14 +49,13 @@ messageForm.addEventListener("submit", async (e) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user: userName, text: messageText }),
   });
-
+  
   if (!response.ok) {
     throw new Error(`Server error: ${response.status}`);
   }
 
   const result = await response.json();
-  console.log("Received from server:", result);
-
+ 
   if (!result.timestamp) return;
 
   // Show success feedback
@@ -65,10 +65,12 @@ messageForm.addEventListener("submit", async (e) => {
 
   // Only update local state when NOT using WebSocket
   if (!USE_WEBSOCKET) {
-    messages.push(result);
-    renderMessages();
+   if (!messages.find((m) => m.timestamp === result.timestamp)) {
+     messages.push(result);
+     renderMessages();
+   }
   }
-
+  
   userInput.value = "";
   messageInput.value = "";
 });
@@ -153,7 +155,11 @@ async function fetchNewMessages() {
     const newMessages = await response.json();
 
     if (newMessages.length > 0) {
-      messages.push(...newMessages);
+      newMessages.forEach((msg) => {
+        if (!messages.find((m) => m.timestamp === msg.timestamp)) {
+          messages.push(msg);
+        }
+      });
       renderMessages();
     }
   } catch (err) {
