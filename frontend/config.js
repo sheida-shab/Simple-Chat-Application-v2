@@ -6,14 +6,14 @@
  * - true: use WebSocket for real-time updates
  * - false: use polling to fetch messages periodically
  */
-export const USE_WEBSOCKET = false;
+export const USE_WEBSOCKET = true;
 
 /**
  * Determines whether to use long-polling or short-polling when WebSocket is disabled
  * - true: use long-polling (server holds requests until new message)
  * - false: use classic short-polling (every 2 seconds)
  */
-export const USE_LONG_POLLING = true;
+export const USE_LONG_POLLING = false;
 
 
 /**
