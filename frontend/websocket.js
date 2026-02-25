@@ -19,18 +19,25 @@ if (USE_WEBSOCKET) {
 
   // Incoming message from server
   ws.addEventListener("message", (event) => {
-    console.log("🔵 WS message received", msg.timestamp); 
-
+     console.log("🔔 Raw WS event:", event);
+    
+    let msg;
+   
     try {
-      const msg = JSON.parse(event.data);
+      msg = JSON.parse(event.data);
       console.log("📩 Parsed WS message:", msg);
-
+    } catch (err) {
+      console.error("Failed to parse WS message:", err);
+      return;
+    }
+    if (!msg || typeof msg.timestamp === "undefined") {
+      console.warn("Received invalid WebSocket message:", msg);
+      return;
+    }
       // Update local state and re-render
       updateMessage(msg);
       renderMessages();
-    } catch (err) {
-      console.error("Failed to parse WS message:", err);
-    }
+    
   });
 
   // Connection closed
